@@ -40,12 +40,17 @@ stars.forEach(star => {
     ratingValue.textContent = `You rated ${this.value} star${this.value > 1 ? 's' : ''}.`;
   });
 });
-
 document.querySelectorAll('.track').forEach(button => {
   button.addEventListener('click', (e) => {
     const goalCard = e.target.closest('.goal-card');
     const goalTitle = goalCard.querySelector('h3').innerText;
     const goalId = goalCard.dataset.goalId;
+    
+    // Check if goalId exists and is valid
+    if (!goalId || goalId === 'undefined' || goalId === '') {
+      alert('Goal ID not found. Please refresh the page and try again.');
+      return;
+    }
     
     const modal = document.getElementById('trackModal');
     const modalButtons = modal.querySelector('.modal-buttons');
@@ -67,18 +72,19 @@ document.querySelectorAll('.track').forEach(button => {
         window.location.href = `usemoney.php?goal_id=${goalId}`;
       });
 
+      // Add View Chart button
+      const chartBtn = document.createElement('button');
+      chartBtn.textContent = 'View Chart';
+      chartBtn.style.background = '#17a2b8';
+      chartBtn.addEventListener('click', () => {
+        window.location.href = `cashflow.php?goal_id=${goalId}`;
+      });
+
       modalButtons.appendChild(addBtn);
       modalButtons.appendChild(useBtn);
+      modalButtons.appendChild(chartBtn);
 
       modal.style.display = 'block';
     });
   });
 });
-
-document.getElementById('logoutChoiceBtn').addEventListener('click', function() {
-    window.location.href = 'logout.php';
-});
-
-function closeModal() {
-  document.getElementById('trackModal').style.display = 'none';
-}

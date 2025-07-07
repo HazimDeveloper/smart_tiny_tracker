@@ -16,7 +16,16 @@ session_start();
 include 'dbconnect.php';
 
 $reviews = [];
-$result = mysqli_query($link, "SELECT review_comment, review_name FROM review");
+
+// First, check if review_name column exists, if not add it
+$check_column = mysqli_query($link, "SHOW COLUMNS FROM review LIKE 'review_name'");
+if (mysqli_num_rows($check_column) == 0) {
+    // Add the missing column
+    mysqli_query($link, "ALTER TABLE review ADD COLUMN review_name VARCHAR(100) DEFAULT 'Anonymous'");
+}
+
+// Now safely get reviews
+$result = mysqli_query($link, "SELECT review_comment, review_name FROM review ORDER BY review_id DESC LIMIT 5");
 
 if($result)
 {
@@ -63,50 +72,62 @@ if($result)
         <?php
         include 'dbconnect.php';
 
-        $user_id = $_SESSION['user_id'];
+        if (isset($_SESSION['user_id'])) {
+            $user_id = mysqli_real_escape_string($link, $_SESSION['user_id']);
 
-        //get goals from database for current user
-        $sql = "SELECT * FROM goal WHERE user_id=$user_id";
-        $result = mysqli_query($link, $sql);
+            //get goals from database for current user
+            $sql = "SELECT * FROM goal WHERE user_id = '$user_id'";
+            $result = mysqli_query($link, $sql);
 
-        if ($result && mysqli_num_rows($result) > 0):
-          while ($row = mysqli_fetch_assoc($result)):
-            // optional to change status color
-            $status = strtolower($row['goal_status']);
+            if ($result && mysqli_num_rows($result) > 0):
+              while ($row = mysqli_fetch_assoc($result)):
+                // optional to change status color
+                $status = strtolower($row['goal_status'] ?? 'active');
 
-            if($status == 'succeed') {
-              $statusClass = 'succeed';
-            }
-            elseif($status == 'failed') {
-              $statusClass = 'failed';
-            }
-            else {
-              $statusClass = 'hurry';
-            }
-        ?>
+                if($status == 'succeed') {
+                  $statusClass = 'succeed';
+                }
+                elseif($status == 'failed') {
+                  $statusClass = 'failed';
+                }
+                else {
+                  $statusClass = 'hurry';
+                }
+            ?>
 
-        <div class="swiper-slide box">
-          <div class="goal-card" data-goal-id="<?= $row['goal_id'] ?>">
-            <h3><?= htmlspecialchars($row['goal_name']) ?></h3>
-            <p class="amount"><?php echo number_format($row['goal_initialamt']); ?></p>
-            <p class="date"><?php echo date("d F Y", strtotime($row['goal_due'])); ?></p>
-            <p class="status"><?php echo $statusClass; ?><?php echo strtoupper($row['goal_status']); ?> !!</p>
-            <!-- tempat categories (need to loop) -->
+            <div class="swiper-slide box">
+              <div class="goal-card" data-goal-id="<?= $row['goal_id'] ?>">
+                <h3><?= htmlspecialchars($row['goal_name']) ?></h3>
+                <p class="amount"><?php echo number_format($row['goal_initialamt'] ?? 0); ?></p>
+                <p class="date"><?php echo date("d F Y", strtotime($row['goal_due'])); ?></p>
+                <p class="status <?= $statusClass ?>"><?php echo strtoupper($status); ?> !!</p>
+                <!-- tempat categories (need to loop) -->
 
-            <div class="buttons">
-              <button class="track">Track</button>
-              <button class="delete">Delete</button>
+                <div class="buttons">
+                  <button class="track">Track</button>
+                  <button class="delete">Delete</button>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
 
-        <?php 
-          endwhile;
-        else:
-        ?>
-          <p style="text-align: center;">No goals found.</p>
-        <?php
-        endif;
+            <?php 
+              endwhile;
+            else:
+            ?>
+              <div class="swiper-slide box">
+                <div class="goal-card">
+                  <h3>No Goals Yet</h3>
+                  <p>Create your first goal below!</p>
+                </div>
+              </div>
+            <?php
+            endif;
+        } else {
+            echo "<div style='text-align: center; padding: 50px;'>";
+            echo "<h3>Please log in to view your goals</h3>";
+            echo "<a href='login.php'>Login Here</a>";
+            echo "</div>";
+        }
         mysqli_close($link);
         ?>
 
@@ -150,11 +171,14 @@ if($result)
         <?php foreach ($reviews as $rev): ?>
           <div class ="testimonial">
             <p>"<?php echo htmlspecialchars($rev['review_comment']); ?>"</p>
-            <h4><?php echo htmlspecialchars($rev['review_name']); ?></h4>
+            <h4>— <?php echo htmlspecialchars($rev['review_name'] ?? 'Anonymous'); ?></h4>
           </div>
         <?php endforeach; ?>
       <?php else: ?>
-        <p>No reviews yet.</p>
+        <div class="testimonial">
+          <p>"Great app for tracking savings!"</p>
+          <h4>— Sample User</h4>
+        </div>
       <?php endif; ?>
     </div>
     <div class="review-form-container">

@@ -6,34 +6,71 @@ searchIcon.addEventListener('click', () => {
 });
 
 document.addEventListener("DOMContentLoaded", function () {
-  const ctx = document.getElementById("cashflowChart").getContext("2d");
+  const ctx = document.getElementById("cashflowChart");
 
-  if (!ctx || typeof Chart === 'undefined') {
-    console.error("Chart context not found or Chart.js not loaded.");
+  if (!ctx) {
+    console.error("Canvas element not found");
+    return;
+  }
+
+  if (typeof Chart === 'undefined') {
+    console.error("Chart.js not loaded");
+    return;
+  }
+
+  // Check if data exists
+  if (typeof cashflowData === 'undefined' || typeof categoryLabels === 'undefined') {
+    console.error("Data not available");
+    return;
+  }
+
+  // Filter out categories with zero amounts for better visualization
+  const filteredData = [];
+  const filteredLabels = [];
+  const filteredColors = [];
+  
+  const colors = ['orange', 'violet', 'red', 'blue', 'green'];
+  
+  cashflowData.forEach((amount, index) => {
+    if (amount > 0) {
+      filteredData.push(amount);
+      filteredLabels.push(categoryLabels[index]);
+      filteredColors.push(colors[index]);
+    }
+  });
+
+  // If no data, show a message
+  if (filteredData.length === 0) {
+    const chartContainer = ctx.parentElement;
+    chartContainer.innerHTML = '<p style="text-align: center; font-size: 2rem; color: #04182d; margin-top: 50px;">No spending data available yet.<br>Start tracking your expenses!</p>';
     return;
   }
 
   new Chart(ctx, {
     type: 'doughnut',
     data: {
-      labels: categoryLabels,
+      labels: filteredLabels,
       datasets: [{
         label: 'Expenses',
-        data: cashflowData,
-        backgroundColor: ['orange', 'violet', 'red', 'blue', 'green'],
-        borderWidth: 1
+        data: filteredData,
+        backgroundColor: filteredColors,
+        borderWidth: 2,
+        borderColor: '#fff'
       }]
     },
     options: {
       responsive: true,
+      maintainAspectRatio: true,
       plugins: {
         legend: {
-          position: 'bottom'
+          display: false // We're using custom legend
         },
         tooltip: {
           callbacks: {
             label: function(context) {
-              return `${context.label}: RM ${context.parsed}`;
+              const total = context.dataset.data.reduce((a, b) => a + b, 0);
+              const percentage = ((context.parsed / total) * 100).toFixed(1);
+              return `${context.label}: RM ${context.parsed.toFixed(2)} (${percentage}%)`;
             }
           }
         }
@@ -41,10 +78,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 });
-
-console.log("Category Labels:", categoryLabels);
-console.log("Cashflow Data:", cashflowData);
-console.log("Chart.js loaded:", typeof Chart !== 'undefined');
 
 document.getElementById('logoutChoiceBtn').addEventListener('click', function() {
     window.location.href = 'logout.php';

@@ -8,10 +8,21 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-$user_id = $_SESSION['user_id'];
+$user_id = mysqli_real_escape_string($link, $_SESSION['user_id']);
 $goal_id = isset($_GET['goal_id']) ? (int)$_GET['goal_id'] : null;
 $used = isset($_GET['used']) ? floatval($_GET['used']) : null;
 $balance = isset($_GET['balance']) ? floatval($_GET['balance']) : null;
+$recent_category = isset($_GET['category']) ? $_GET['category'] : null;
+
+// Get goal name if goal_id is provided
+$goal_name = "All Goals";
+if ($goal_id) {
+    $goal_query = "SELECT goal_name FROM goal WHERE goal_id = $goal_id AND user_id = '$user_id'";
+    $goal_result = mysqli_query($link, $goal_query);
+    if ($goal_result && $goal_row = mysqli_fetch_assoc($goal_result)) {
+        $goal_name = $goal_row['goal_name'];
+    }
+}
 
 // Default category totals
 $categoryTotals = [
@@ -22,11 +33,31 @@ $categoryTotals = [
     'Others' => 0
 ];
 
-// Get cashflow by category
+// Check if cashflow table exists, if not create it
+$check_table = mysqli_query($link, "SHOW TABLES LIKE 'cashflow'");
+if (mysqli_num_rows($check_table) == 0) {
+    $create_table = "CREATE TABLE `cashflow` (
+        `cashflow_id` int(11) NOT NULL AUTO_INCREMENT,
+        `user_id` varchar(100) NOT NULL,
+        `goal_id` int(11) NOT NULL,
+        `category` varchar(50) NOT NULL,
+        `amount` decimal(10,2) NOT NULL,
+        `date_created` timestamp DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (`cashflow_id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
+    mysqli_query($link, $create_table);
+}
+
+// Get cashflow by category with proper SQL escaping
 $sql = "SELECT category, SUM(amount) as total 
         FROM cashflow 
-        WHERE user_id = $user_id" . ($goal_id ? " AND goal_id = $goal_id" : "") . " 
-        GROUP BY category";
+        WHERE user_id = '$user_id'";
+
+if ($goal_id) {
+    $sql .= " AND goal_id = $goal_id";
+}
+
+$sql .= " GROUP BY category";
 
 $result = mysqli_query($link, $sql);
 if ($result) {
@@ -38,6 +69,8 @@ if ($result) {
         }
     }
 }
+
+mysqli_close($link);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -68,19 +101,19 @@ if ($result) {
 </header>
 
 <main class="cashflow-container">
-  <h1 class="title">DAILY CASH FLOW</h1>
+  <h1 class="title">DAILY CASH FLOW - <?= htmlspecialchars($goal_name) ?></h1>
 
   <?php if ($used !== null && $balance !== null): ?>
-  <div class="notification" style="padding: 10px; background-color: #e0ffe0; border: 1px solid #00aa00; margin-bottom: 15px;">
-    <p><strong>Transaction Recorded!</strong></p>
-    <p>You spent RM <?= number_format($used, 2) ?> on this goal.</p>
-    <p>Remaining goal balance: RM <?= number_format($balance, 2) ?></p>
+  <div class="notification">
+    <p><strong>Transaction Recorded Successfully!</strong></p>
+    <p>You spent <strong>RM <?= number_format($used, 2) ?></strong> on <strong><?= htmlspecialchars($recent_category) ?></strong></p>
+    <p>Remaining goal balance: <strong>RM <?= number_format($balance, 2) ?></strong></p>
   </div>
   <?php endif; ?>
 
   <div class="cashflow-content">
     <div class="chart-box">
-      <canvas id="cashflowChart"></canvas>
+      <canvas id="cashflowChart" width="400" height="400"></canvas>
     </div>
     <div class="legend-box">
       <ul id="legendList">
@@ -136,8 +169,12 @@ if ($result) {
 </footer>
 
 <script>
+  // PHP data passed to JavaScript
   const cashflowData = [<?= implode(',', array_map('floatval', array_values($categoryTotals))) ?>];
   const categoryLabels = ['<?= implode("','", array_keys($categoryTotals)) ?>'];
+  
+  console.log('Cashflow Data:', cashflowData);
+  console.log('Category Labels:', categoryLabels);
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

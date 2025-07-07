@@ -2,19 +2,44 @@
 include 'dbconnect.php';
 session_start();
 
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit();
+}
+
+$user_id = mysqli_real_escape_string($link, $_SESSION['user_id']);
 $goalId = $_GET['goal_id'] ?? null;
-$goalName = "no goal selected"; // fallback
+$goalName = "Select a Goal"; // fallback
+$showGoalSelector = false;
 
-if ($goalId && isset($_SESSION['user_id'])) {
-  $user_id = $_SESSION['user_id'];
-  $goalId = (int)$goalId;
+// If no goal_id provided or goal_id is empty, show goal selector
+if (!$goalId || $goalId == '') {
+    $showGoalSelector = true;
+} else {
+    // Try to get the specific goal
+    $goalId = (int)$goalId;
+    $query = "SELECT goal_name, goal_initialamt, goal_curramt, goal_balance FROM goal WHERE goal_id = $goalId AND user_id = '$user_id'";
+    $result = mysqli_query($link, $query);
 
-  $query = "SELECT goal_name FROM goal WHERE goal_id = $goalId AND user_id = $user_id";
-  $result = mysqli_query($link, $query);
-
-  if ($row = mysqli_fetch_assoc($result)) {
+    if ($result && mysqli_num_rows($result) > 0) {
+        $row = mysqli_fetch_assoc($result);
         $goalName = $row['goal_name'];
-  }
+    } else {
+        // Goal not found, show selector
+        $showGoalSelector = true;
+        $goalId = null;
+    }
+}
+
+// Get all user goals for the selector
+$userGoals = [];
+$goalsQuery = "SELECT goal_id, goal_name, goal_initialamt, goal_curramt, goal_balance FROM goal WHERE user_id = '$user_id' ORDER BY goal_name";
+$goalsResult = mysqli_query($link, $goalsQuery);
+if ($goalsResult) {
+    while ($goalRow = mysqli_fetch_assoc($goalsResult)) {
+        $userGoals[] = $goalRow;
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -52,32 +77,73 @@ if ($goalId && isset($_SESSION['user_id'])) {
       <input type="search" placeholder="Search..." />
     </div>
   </header>
+  
   <main class="use-container">
-    <form id="useMoneyForm" action="usemoney_check.php" method="post">
-    <input type="hidden" name="goal_id" value="<?= htmlspecialchars($_GET['goal_id'] ?? '') ?>">
-    <h1 class="goal-title"><?= htmlspecialchars($goalName) ?></h1>
-    <div class="form-box">
-      <h2>RECORD YOUR TRANSACTION</h2>
-
-        <div class="category">
-          <label><strong>Choose Category</strong></label>
-          <div class="radio-options">
-            <label><input type="radio" name="category" value="Foods" required /> Foods</label>
-            <label><input type="radio" name="category" value="Entertainment" /> Entertainment</label>
-            <label><input type="radio" name="category" value="Transportation" /> Transportation</label>
-            <label><input type="radio" name="category" value="Bill & Utilities" /> Bill & Utilities</label>
-            <label><input type="radio" name="category" value="Others" /> Others</label>
-          </div>
+    
+    <?php if ($showGoalSelector): ?>
+    <!-- Goal Selection Section -->
+    <h1 class="goal-title">SELECT A GOAL</h1>
+    
+    <?php if (empty($userGoals)): ?>
+        <div class="form-box">
+            <h2>NO GOALS FOUND</h2>
+            <p style="font-size: 2rem; color: #04182d; text-align: center; margin: 2rem 0;">
+                You don't have any goals yet. Please create a goal first.
+            </p>
+            <div style="text-align: center;">
+                <a href="userHomepage.php#newgoal" style="background: #04182d; color: white; padding: 1rem 2rem; text-decoration: none; border-radius: 10px; font-size: 1.8rem;">
+                    Create Your First Goal
+                </a>
+            </div>
         </div>
-
-        <div class="amount">
-          <label><strong>Enter Amount</strong></label>
-          <input type="number" name= "amount" placeholder="RM 200" required />
+    <?php else: ?>
+        <div class="form-box">
+            <h2>CHOOSE A GOAL TO RECORD SPENDING</h2>
+            <div style="display: grid; gap: 2rem; margin-top: 3rem;">
+                <?php foreach ($userGoals as $goal): ?>
+                <div class="goal-option" style="border: 2px solid #04182d; border-radius: 15px; padding: 2rem; cursor: pointer; transition: all 0.3s;" 
+                     onclick="selectGoal(<?= $goal['goal_id'] ?>)">
+                    <h3 style="color: #04182d; font-size: 2.5rem; margin-bottom: 1rem;"><?= htmlspecialchars($goal['goal_name']) ?></h3>
+                    <p style="font-size: 2rem; color: #04182d;">
+                        <strong>Target:</strong> RM <?= number_format($goal['goal_initialamt'], 2) ?><br>
+                        <strong>Available:</strong> RM <?= number_format($goal['goal_curramt'], 2) ?><br>
+                        <strong>Remaining:</strong> RM <?= number_format($goal['goal_balance'], 2) ?>
+                    </p>
+                </div>
+                <?php endforeach; ?>
+            </div>
         </div>
+    <?php endif; ?>
+    
+    <?php else: ?>
+    <!-- Use Money Form Section -->
+    <form action="usemoney_check.php" method="post">
+        <input type="hidden" name="goal_id" value="<?= htmlspecialchars($goalId) ?>">
+        <h1 class="goal-title"><?= htmlspecialchars($goalName) ?></h1>
+        
+        <div class="form-box">
+            <h2>RECORD YOUR TRANSACTION</h2>
 
-        <button type="submit" class="submit-btn">SUBMIT</button>
-      </form>
-    </div>
+            <div class="category">
+                <label><strong>Choose Category</strong></label>
+                <div class="radio-options">
+                    <label><input type="radio" name="category" value="Foods" required /> Foods</label>
+                    <label><input type="radio" name="category" value="Entertainment" /> Entertainment</label>
+                    <label><input type="radio" name="category" value="Transportation" /> Transportation</label>
+                    <label><input type="radio" name="category" value="Bill & Utilities" /> Bill & Utilities</label>
+                    <label><input type="radio" name="category" value="Others" /> Others</label>
+                </div>
+            </div>
+
+            <div class="amount">
+                <label><strong>Enter Amount</strong></label>
+                <input type="number" name="amount" placeholder="RM 200" step="0.01" min="0.01" required />
+            </div>
+
+            <button type="submit" class="submit-btn">SUBMIT</button>
+        </div>
+    </form>
+    <?php endif; ?>
   </main>
 
   <!-- Footer Start -->
@@ -114,6 +180,59 @@ if ($goalId && isset($_SESSION['user_id'])) {
 
   <!-- Footer End -->
   <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
-  <script src="usemoney.js"></script>
+  
+  <script>
+  const searchIcon = document.getElementById('search');
+  const searchBox = document.querySelector('.search');
+
+  searchIcon.addEventListener('click', () => {
+    searchBox.classList.toggle('active');
+  });
+
+  document.getElementById('logoutChoiceBtn').addEventListener('click', function() {
+      window.location.href = 'logout.php';
+  });
+
+  function selectGoal(goalId) {
+      window.location.href = 'usemoney.php?goal_id=' + goalId;
+  }
+
+  // Add hover effects to goal options
+  document.querySelectorAll('.goal-option').forEach(option => {
+      option.addEventListener('mouseenter', function() {
+          this.style.backgroundColor = '#f0f8ff';
+          this.style.transform = 'scale(1.02)';
+      });
+      
+      option.addEventListener('mouseleave', function() {
+          this.style.backgroundColor = 'transparent';
+          this.style.transform = 'scale(1)';
+      });
+  });
+
+  // Form validation
+  document.addEventListener('DOMContentLoaded', function() {
+      const form = document.querySelector('form');
+      
+      if (form) {
+          form.addEventListener('submit', function(e) {
+              const category = document.querySelector('input[name="category"]:checked');
+              const amount = document.querySelector('input[name="amount"]').value;
+              
+              if (!category) {
+                  e.preventDefault();
+                  alert('Please select a category.');
+                  return;
+              }
+              
+              if (!amount || amount <= 0) {
+                  e.preventDefault();
+                  alert('Please enter a valid amount.');
+                  return;
+              }
+          });
+      }
+  });
+  </script>
 </body>
 </html>

@@ -7,18 +7,30 @@ searchIcon.addEventListener('click', () => {
 
 document.getElementById('logoutChoiceBtn').addEventListener('click', function() {
     window.location.href = 'logout.php';
-  });
-  
-document.getElementById('useMoneyForm').addEventListener('submit', function (e) {
-  e.preventDefault();
+});
 
-  const userConfirm = confirm("Do you have another transaction?");
-  
-  if (userConfirm) {
-    // Reload same page
-    window.location.href = "usemoney.php";
-  } else {
-    // Go to cashflow page
-    window.location.href = "cashflow.php";
-  }
+// Form submission handling - now just submits normally without popup
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    
+    form.addEventListener('submit', function(e) {
+        // Validate form data
+        const category = document.querySelector('input[name="category"]:checked');
+        const amount = document.querySelector('input[name="amount"]').value;
+        
+        if (!category) {
+            e.preventDefault();
+            alert('Please select a category.');
+            return;
+        }
+        
+        if (!amount || amount <= 0) {
+            e.preventDefault();
+            alert('Please enter a valid amount.');
+            return;
+        }
+        
+        // Form is valid, let it submit normally
+        // The PHP script will handle the redirect to cashflow.php
+    });
 });

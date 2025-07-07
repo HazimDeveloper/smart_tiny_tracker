@@ -40,16 +40,46 @@
     <div class="wrapper">
       <div class="form-box login">
         <h2>LOGIN</h2>
+        
+        <!-- Error Messages -->
+        <?php if (isset($_GET['error'])): ?>
+          <div style="background: #ffe6e6; color: #d32f2f; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center;">
+            <?php if ($_GET['error'] == 'invalid'): ?>
+              <strong>❌ Login Failed!</strong><br>
+              Invalid username or password. Please try again.
+            <?php elseif ($_GET['error'] == 'unauthorized'): ?>
+              <strong>⚠️ Access Denied!</strong><br>
+              Please log in to continue.
+            <?php else: ?>
+              <strong>❌ Error!</strong><br>
+              Something went wrong. Please try again.
+            <?php endif; ?>
+          </div>
+        <?php endif; ?>
+        
+        <!-- Success Messages -->
+        <?php if (isset($_GET['success']) && $_GET['success'] == 'registered'): ?>
+          <div style="background: #e8f5e8; color: #2e7d32; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center;">
+            <strong>✅ Registration Successful!</strong><br>
+            You can now log in with your credentials.
+          </div>
+        <?php endif; ?>
+        
         <form name="login" method="post" action="login_check.php">
           <div class="input-box">
             <span class="icon"><ion-icon name="person-circle-outline"></ion-icon></span>
-            <input type="text" name="user" id="user" required aria-label="User ID" value="<?php if(isset($_COOKIE["user"])) { echo $_COOKIE["user"]; } ?>">
+            <input type="text" name="user" id="user" required aria-label="User ID" value="<?php if(isset($_COOKIE["user"])) { echo htmlspecialchars($_COOKIE["user"]); } ?>">
             <label>User ID</label>
           </div>
           <div class="input-box">
             <span class="icon"><ion-icon name="lock-closed-outline"></ion-icon></span>
-            <input type="password" name="pass" id="pass" required aria-label="Password" value="<?php if(isset($_COOKIE["pass"])) { echo $_COOKIE["pass"]; } ?>">
+            <input type="password" name="pass" id="pass" required aria-label="Password" value="<?php if(isset($_COOKIE["pass"])) { echo htmlspecialchars($_COOKIE["pass"]); } ?>">
             <label>Password</label>
+          </div>
+
+          <div style="display: flex; align-items: center; margin: 15px 0;">
+            <input type="checkbox" name="remember" id="remember" style="margin-right: 8px;">
+            <label for="remember" style="color: #04182d; font-size: 1rem; cursor: pointer;">Remember me</label>
           </div>
 
           <div class="forgotPass">
@@ -61,6 +91,7 @@
             <p>Don't have an account? <a href="register.php" class="register-link">Register</a></p>
           </div>
         </form>
+        
       </div>
     </div>
     <!-- Login form End -->

@@ -4,14 +4,9 @@ include 'dbconnect.php';
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
-    header("Location: addmoney.php?error=unauthorized");
+    header("Location: login.php?error=unauthorized");
     exit();
 }
-
-// Debug: See what's received
-echo '<pre>';
-print_r($_POST);
-echo '</pre>';
 
 $user_id = $_SESSION['user_id'];
 
@@ -25,8 +20,13 @@ if ($goal_id <= 0 || $amount <= 0 || !$category) {
     exit();
 }
 
+// Sanitize input
+$goal_id = (int)$goal_id;
+$amount = (float)$amount;
+$category = mysqli_real_escape_string($link, $category);
+
 // Get current amount from the goal
-$query = "SELECT goal_initialamt, goal_curramt FROM goal WHERE goal_id = $goal_id AND user_id = $user_id";
+$query = "SELECT goal_initialamt, goal_curramt, goal_balance FROM goal WHERE goal_id = $goal_id AND user_id = $user_id";
 $result = mysqli_query($link, $query);
 
 if (!$result || mysqli_num_rows($result) === 0) {
@@ -35,43 +35,40 @@ if (!$result || mysqli_num_rows($result) === 0) {
 }
 
 $row = mysqli_fetch_assoc($result);
-$current = (float)$row['goal_curramt'];
-$newcurrent = $current - $amount;
-$goal_balance = $row['goal_initialamt'] - $newcurrent;
+$initial_amount = (float)$row['goal_initialamt'];
+$current_amount = (float)$row['goal_curramt'];
 
-// Insert transaction into `cashflow` table
-$queryCF = "INSERT INTO cashflow (user_id, goal_id, category, amount) 
-            VALUES ('$user_id', '$goal_id', '$category', '$amount')";
-$resultCF = mysqli_query($link, $queryCF);
+// Calculate new amounts (subtract spent amount from current amount)
+$new_current_amount = $current_amount - $amount;
+$new_balance = $initial_amount - $new_current_amount;
 
-if (!$resultCF) {
+// Insert transaction into cashflow table
+$insert_cashflow = "INSERT INTO cashflow (user_id, goal_id, category, amount) 
+                    VALUES ('$user_id', '$goal_id', '$category', '$amount')";
+$cashflow_result = mysqli_query($link, $insert_cashflow);
+
+if (!$cashflow_result) {
     die("Failed to insert into cashflow: " . mysqli_error($link));
 }
 
 // Update goal amounts
-$updateGoal = "UPDATE goal
-               SET goal_curramt = $newcurrent,
-                   goal_balance = $goal_balance
-               WHERE goal_id = $goal_id AND user_id = $user_id";
+$update_goal = "UPDATE goal 
+                SET goal_curramt = '$new_current_amount',
+                    goal_balance = '$new_balance'
+                WHERE goal_id = '$goal_id' AND user_id = '$user_id'";
 
-$resultUpdate = mysqli_query($link, $updateGoal);
+$update_result = mysqli_query($link, $update_goal);
 
-if (!$resultUpdate) {
+if (!$update_result) {
     die("Failed to update goal: " . mysqli_error($link));
-}
-
-// Optional: Get updated balance again (if needed)
-$balanceResult = mysqli_query($link, "SELECT goal_balance FROM goal WHERE goal_id = $goal_id AND user_id = $user_id");
-$goalBalance = 0;
-if ($balanceResult && $balanceRow = mysqli_fetch_assoc($balanceResult)) {
-    $goalBalance = $balanceRow['goal_balance'];
 }
 
 mysqli_close($link);
 
-// Redirect to `cashflow.php` with success data
+// Redirect to cashflow.php with success data
 header("Location: cashflow.php?goal_id=" . urlencode($goal_id) . 
        "&used=" . urlencode($amount) . 
-       "&balance=" . urlencode($newcurrent));
+       "&balance=" . urlencode($new_current_amount) . 
+       "&category=" . urlencode($category));
 exit();
 ?>
