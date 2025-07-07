@@ -1,0 +1,260 @@
+:root {
+  --black: whitesmoke;
+  --white: #04182d;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Georgia, serif;
+  transition: 0.2s linear;
+}
+
+html {
+  font-size: 62.5%;
+  scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: url('background2.jpg') no-repeat center center/cover;
+  color: #250b52;
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  background-color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.4rem 7%;
+  z-index: 999;
+}
+
+.logoContent {
+  display: flex;
+  align-items: center;
+}
+
+.logoContent .logo img {
+  height: 4rem;
+}
+
+.logoName {
+  margin-left: 1.5rem;
+  color: white;
+  font-size: 2rem;
+  font-weight: bolder;
+}
+
+.navbar a {
+  font-size: 2rem;
+  margin-right: 3rem;
+  color: white;
+  font-weight: bold;
+  text-decoration: none;
+  border-bottom: none;
+}
+
+.navbar a:hover {
+  border-bottom: 0.1rem solid var(--black);
+  padding-bottom: 0.4rem;
+}
+
+.btnLogout-popup {
+  width: 130px;
+  height: 50px;
+  background: transparent;
+  border: 2px solid white; 
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 2rem;
+  font-weight: bold;
+  color: white; 
+}
+
+.btnLogout-popup:hover {
+  color: #04182d;
+  background: #fff;
+}
+
+.icon-and-login {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.icon-and-login i {
+  font-size: 2rem;
+  color: white;
+  cursor: pointer;
+}
+
+.search {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 3%;
+  width: 50%;
+  height: 5rem;
+  margin-top: 1rem;
+}
+
+.search input {
+  width: 77%;
+  height: 100%;
+  font-size: 1.6rem;
+  background-color: rgb(218, 218, 230);
+  color: var(--white);
+  border-radius: 1rem;
+  padding: 0.5rem 1.5rem;
+}
+
+.search.active {
+  display: inline-block;
+}
+.add-money-container {
+  padding-top: 120px;
+  text-align: center;
+}
+
+.goal-title {
+  font-size: 6rem;
+  font-weight: bold;
+  color: white;
+  margin-top: 2rem;
+  margin-bottom: 6rem;
+  text-shadow: 2px 2px 5px black;
+}
+
+.add-form-box {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
+  padding: 3rem;
+  margin: 3rem auto;
+  border-radius: 20px;
+  height: 55rem;
+  max-width: 1000px;
+  margin-bottom: 8rem;
+}
+
+.form-title {
+  font-size: 3.5rem;
+  margin-top: 5rem;
+  margin-bottom: 5rem;
+  color: #04182d;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 2rem;
+  font-size: 2.5rem;
+  color: #04182d;
+
+}
+
+input[type='number'] {
+  width: 90%;
+  padding: 1rem;
+  font-size: 1.8rem;
+  border: 2px solid #04182d;
+  border-radius: 12px;
+  margin-bottom: 3rem;
+}
+
+button {
+  background-color: #04182d;
+  color: white;
+  padding: 0.8rem 3rem;
+  font-size: 2rem;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+button:hover {
+  background-color: #103f72;
+}
+
+.result-box {
+  display: none;
+  margin-top: 3rem;
+  background: #e4ebf1;
+  padding: 2rem;
+  border-radius: 15px;
+}
+.result-box h3 {
+  font-size: 2.6rem; 
+  font-weight: bold;
+  color: #04182d;
+  margin-bottom: 3rem;
+}
+
+
+.summary-box {
+  font-size: 2.5rem;
+  margin-top: 1rem;
+}
+.footer {
+  background-color: #04182d;
+  color: white;
+  padding: 5rem 7%;
+  font-size: 1.5rem;
+}
+
+.footer-main {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 3rem;
+  margin-bottom: 3rem;
+}
+
+.footer-column h3 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: var(--black);
+}
+
+.footer-column p,
+.footer-column a {
+  color: whitesmoke;
+  margin-bottom: 0.8rem;
+  display: block;
+  transition: 0.3s;
+}
+
+.footer-column a:hover {
+  color: #66b2ff;
+  transform: translateX(5px);
+}
+
+.social-icons {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.social-icons a {
+  font-size: 2rem;
+  color: white;
+  transition: 0.3s;
+}
+
+.social-icons a:hover {
+  color: #66b2ff;
+}
+
+.footer-bottom {
+  text-align: center;
+  border-top: 1px solid #ffffff1a;
+  padding-top: 2rem;
+  font-size: 1.4rem;
+  color: #ccc;
+}

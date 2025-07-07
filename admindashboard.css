@@ -1,0 +1,368 @@
+:root {
+  --black: whitesmoke;
+  --white: #04182d;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Georgia, serif;
+  transition: 0.2s linear;
+}
+
+html {
+  font-size: 62.5%;
+  scroll-behavior: smooth;
+}
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Georgia, serif;
+  background: url('background3.jpg') no-repeat center center fixed;
+  background-size: cover;
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  background-color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.4rem 7%;
+  z-index: 999;
+}
+
+.logoContent {
+  display: flex;
+  align-items: center;
+}
+
+.logoContent .logo img {
+  height: 4rem;
+}
+
+.logoName {
+  margin-left: 1.5rem;
+  color: white;
+  font-size: 2rem;
+  font-weight: bolder;
+}
+
+.navbar a {
+  font-size: 2rem;
+  margin-right: 3rem;
+  color: white;
+  font-weight: bold;
+  text-decoration: none;
+  border-bottom: none;
+}
+
+.navbar a:hover {
+  border-bottom: 0.1rem solid var(--black);
+  padding-bottom: 0.4rem;
+}
+
+.btnLogout-popup {
+  width: 130px;
+  height: 50px;
+  background: transparent;
+  border: 2px solid white; 
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 2rem;
+  font-weight: bold;
+  color: white; 
+}
+
+.btnLogout-popup:hover {
+  color: #04182d;
+  background: #fff;
+}
+
+.icon-and-login {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.icon-and-login i {
+  font-size: 2rem;
+  color: white;
+  cursor: pointer;
+}
+
+.search {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 3%;
+  width: 50%;
+  height: 5rem;
+  margin-top: 1rem;
+}
+
+.search input {
+  width: 77%;
+  height: 100%;
+  font-size: 1.6rem;
+  background-color: rgb(218, 218, 230);
+  color: var(--white);
+  border-radius: 1rem;
+  padding: 0.5rem 1.5rem;
+}
+
+.search.active {
+  display: inline-block;
+}
+
+section {
+  padding: 2rem 7%;
+}
+
+.dashboard-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px;
+  padding: 40px;
+}
+
+.admin-list {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 70px;
+  border-radius: 15px;
+  flex: 1 1 500px;
+}
+
+.admin-list h2 {
+  text-align: center;
+  font-size: 90px;
+  color: #3f0071;
+  margin-bottom: 15px;
+}
+
+.admin-list table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-list th, .admin-list td {
+  padding: 10px;
+  text-align: center;
+  border-bottom: 1px solid #ccc;
+}
+
+.task-completion {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 20px;
+  border-radius: 15px;
+  text-align: center;
+  flex: 1 1 300px;
+}
+
+.progress-circle {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: conic-gradient(#2cb9d1 0% 67%, #1a2c38 67% 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 15px auto;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.target-text {
+  font-size: 16px;
+  color: #333;
+}
+
+.review-visit {
+  display: flex;
+  gap: 20px;
+  flex: 1 1 500px;
+  justify-content: center;
+}
+
+.review-box, .visit-box {
+  background-color: #3f0071;
+  color: white;
+  padding: 20px;
+  border-radius: 15px;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.icon {
+  font-size: 32px;
+}
+/* Dashboard Main Container */
+.dashboard-body {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 80px;
+  padding: 130px 30px 60px; /* padding top adjusted to avoid header overlap */
+}
+
+/* Admin Table Box */
+.admin-box {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 20px;
+  border-radius: 15px;
+  width: 1000px;
+  height: 400px;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.admin-box h2 {
+  font-size: 4rem;
+  font-weight: bold;
+  color: #3f0071;
+  margin-bottom: 20px;
+  margin-top:10px ;
+}
+
+.admin-box table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1.7rem;
+}
+
+.admin-box th, .admin-box td {
+  padding: 14px;
+  text-align: center;
+  border-bottom: 1px solid #ccc;
+}
+
+/* Task Box */
+.task-box {
+  background: rgba(255, 255, 255, 0.9);
+  width: 500px;
+  height: 400px;
+  padding: 20px;
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.task-header h3 {
+  margin: 0;
+  font-size: 4rem;
+color: #3f0071;
+
+}
+
+
+.task-header hr {
+  margin: 10px auto;
+  width: 90%;
+  border: 1px solid #444;
+}
+
+/* Donut Chart */
+.donut-chart {
+  width: 250px;
+  height: 250px;
+  margin: 10px auto;
+  border-radius: 50%;
+  background: conic-gradient(#21b7d9 0% 67%, #1d2f3b 67% 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.centered-text {
+  font-size: 2.7rem;
+  font-weight: bold;
+  color: #000;
+  position: absolute;
+}
+
+.target-text {
+  font-size: 1.8rem;
+  margin-top: 10px;
+  color: #444;
+}
+
+/* Review & Visit Boxes */
+.review-box,
+.visit-box {
+  display: flex;
+  align-items: center;
+  width: 400px;
+height: 300PX;
+  border-radius: 15px;
+  padding: 40px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.review-box {
+  background: #3f0071;
+  color: white;
+}
+
+.visit-box {
+  background: #bba5d3;
+  color: white;
+}
+
+.review-icon,
+.visit-icon {
+  font-size: 11rem;
+  margin-left: 40PX;
+  margin-right: 17px;
+}
+
+.review-info p,
+.visit-info p {
+  margin: 10px 50PX;
+  font-size: 3rem;
+}
+.review-info h3,
+.review-info h4,
+.visit-info h3,
+.visit-info h4 {
+    margin: 10px 50PX;
+    font-size: 2.5rem;
+}
+
+
+/* Footer */
+.footer {
+  background-color: #04182d;
+  color: white;
+  padding: 1rem 5%;
+  font-size: 1rem;
+}
+.social-icons a {
+  font-size: 1rem;
+  text-align: center;
+}
+
+
+.social-icons a {
+  font-size: 3rem;
+  color: white;
+  transition: 0.3s;
+  text-align: center;
+}
+
+.social-icons a:hover {
+  color: #66b2ff;
+}
+
+.footer-bottom {
+  font-size: 1.2rem;
+  text-align: center;
+}
+/* footer end */

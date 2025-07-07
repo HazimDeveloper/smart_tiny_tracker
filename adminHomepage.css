@@ -1,0 +1,219 @@
+:root {
+  --black: whitesmoke;
+  --white: #04182d;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Georgia, serif;
+  transition: 0.2s linear;
+}
+
+html {
+  font-size: 62.5%;
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--black);
+  color: var(--white);
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  background-color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.4rem 7%;
+  z-index: 999;
+}
+
+.logoContent {
+  display: flex;
+  align-items: center;
+}
+
+.logoContent .logo img {
+  height: 4rem;
+}
+
+.logoName {
+  margin-left: 1.5rem;
+  color: white;
+  font-size: 2rem;
+  font-weight: bolder;
+}
+
+.navbar a {
+  font-size: 2rem;
+  margin-right: 3rem;
+  color: white;
+  font-weight: bold;
+  text-decoration: none;
+  border-bottom: none;
+}
+
+.navbar a:hover {
+  border-bottom: 0.1rem solid var(--black);
+  padding-bottom: 0.4rem;
+}
+
+.btnLogout-popup {
+  width: 130px;
+  height: 50px;
+  background: transparent;
+  border: 2px solid white; 
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 2rem;
+  font-weight: bold;
+  color: white; 
+}
+
+.btnLogout-popup:hover {
+  color: #04182d;
+  background: #fff;
+}
+
+.icon-and-login {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.icon-and-login i {
+  font-size: 2rem;
+  color: white;
+  cursor: pointer;
+}
+
+.search {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 3%;
+  width: 50%;
+  height: 5rem;
+  margin-top: 1rem;
+}
+
+.search input {
+  width: 77%;
+  height: 100%;
+  font-size: 1.6rem;
+  background-color: rgb(218, 218, 230);
+  color: var(--white);
+  border-radius: 1rem;
+  padding: 0.5rem 1.5rem;
+}
+
+.search.active {
+  display: inline-block;
+}
+
+section {
+  padding: 2rem 7%;
+}
+/* Fullscreen background image */
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: Arial, sans-serif;
+}
+
+.background {
+  background-image: url('background3.jpg'); /* adjust if you rename it */
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
+  width: 100%;
+  position: relative;
+  color: white;
+}
+
+/* Top right buttons */
+.top-buttons {
+  position: absolute;
+  top: 20px;
+  right: 40px;
+  display: flex;
+  gap: 15px;
+}
+
+.btn {
+  background-color: #6a4fb4;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  position: relative;
+}
+
+.btn:hover {
+  background-color: #593ca0;
+}
+
+.badge {
+  background-color: red;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 12px;
+  margin-left: 5px;
+  position: absolute;
+  top: -5px;
+  right: -10px;
+}
+
+.welcome {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.welcome h1 {
+  font-size: 9rem;
+  font-weight: 800;
+  text-shadow: 2px 2px 5px #04182d;
+  margin: 10px 0;
+}
+
+/* Footer */
+.footer {
+  background-color: #04182d;
+  color: white;
+  padding: 1rem 5%;
+  font-size: 1rem;
+}
+.social-icons a {
+  font-size: 1rem;
+  text-align: center;
+}
+
+
+.social-icons a {
+  font-size: 3rem;
+  color: white;
+  transition: 0.3s;
+  text-align: center;
+}
+
+.social-icons a:hover {
+  color: #66b2ff;
+}
+
+.footer-bottom {
+  font-size: 1.2rem;
+  text-align: center;
+}
+/* footer end */
